@@ -1,41 +1,26 @@
 ((function() {
-    var self, oauthSigner;
-    self = this;
-    window.oauthSigner = oauthSigner = function(parameters) {
+    window.oauthSigner = function(parameters) {
+	    var oauthSignerOld = oauthSignerOld(parameters);
         return _.extend({
             token: function() {
-                var self;
-                self = this;
                 return "";
             },
             tokenSecret: function() {
-                var self;
-                self = this;
                 return "";
             },
             version: function() {
-                var self;
-                self = this;
                 return "1.0";
             },
             signatureMethod: function() {
-                var self;
-                self = this;
                 return "HMAC-SHA1";
             },
             method: function() {
-                var self;
-                self = this;
                 return "GET";
             },
             timestamp: function() {
-                var self;
-                self = this;
                 return Math.floor((new Date).getTime() / 1e3);
             },
             fields: function() {
-                var self;
-                self = this;
                 return {};
             },
             oauthParameters: function() {
@@ -75,15 +60,11 @@
                 }).join("&");
             },
             urlEncoded: function(fields) {
-                var self;
-                self = this;
                 return _.map(_.keys(fields), function(fieldName) {
                     return fieldName + "=" + encodeURIComponent(fields[fieldName]);
                 }).join("&");
             },
             headerEncoded: function(fields) {
-                var self;
-                self = this;
                 return _.map(_.keys(fields), function(fieldName) {
                     return fieldName + '="' + encodeURIComponent(fields[fieldName]) + '"';
                 }).join(", ");
@@ -131,20 +112,12 @@
                 var encoding, self;
                 encoding = gen1_options && gen1_options.hasOwnProperty("encoding") && gen1_options.encoding !== void 0 ? gen1_options.encoding : "binary";
                 self = this;
-                if (typeof process !== "undefined") {
-                    var crypto, h;
-                    crypto = require("crypto");
-                    h = crypto.createHmac("sha1", self.hmacKey());
-                    h.update(self.baseString());
-                    return h.digest(encoding);
+                var binaryHash;
+                binaryHash = CryptoJS.HmacSHA1(self.baseString(), self.hmacKey());
+                if (encoding === "base64") {
+                    return binaryHash.toString(CryptoJS.enc.Base64);
                 } else {
-                    var binaryHash;
-                    binaryHash = CryptoJS.HmacSHA1(self.baseString(), self.hmacKey());
-                    if (encoding === "base64") {
-                        return binaryHash.toString(CryptoJS.enc.Base64);
-                    } else {
-                        return binaryHash;
-                    }
+                    return binaryHash;
                 }
             },
             base64Signature: function() {
@@ -157,7 +130,17 @@
             signature: function() {
                 var self;
                 self = this;
-                return self.percentEncode(self.base64Signature());
+
+	            // var signatureNew = oauthSignature.generate(self.method(), self.url(), self.queryString(), self.consumerSecret(), self.tokenSecret());
+	            var signatureNew = oauthSignature.generate(self.method(), self.url(), self.queryStringFields(), self.consumerSecret(), self.tokenSecret());
+	            var signatureOld = oauthSignerOld.percentEncode(oauthSignerOld.base64Signature());
+
+	            if (signatureNew != signatureOld) {
+		            alert('The signatures are different');
+		            throw new Error('The signatures are different')
+	            }
+
+                return signatureNew;
             },
             signedUrl: function() {
                 var self;
@@ -180,8 +163,6 @@
                 }
             },
             percentEncode: function(s) {
-                var self;
-                self = this;
                 return encodeURIComponent(s).replace(/\*/g, "%2A");
             }
         }, parameters);
