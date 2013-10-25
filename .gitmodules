@@ -1,3 +1,0 @@
-[submodule "lib/oauth-signature"]
-	path = lib/oauth-signature
-	url = https://github.com/bettiolo/oauth-signature.git
