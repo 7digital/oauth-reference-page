@@ -46,7 +46,7 @@
           <li><label for="query-string">query string</label><textarea id="query-string" readonly data-bind="value: signature.queryString"></textarea></li>
           <li><label for="base-string">base string</label><textarea id="base-string" readonly data-bind="value: signature.baseString"></textarea></li>
           <li><label for="hmac-key">hmac key</label><input id="hmac-key" class="large" type="text" readonly data-bind="value: signature.hmacKey"></li>
-          <li><label for="base64-signature">base64 signature</label><input id="base64-signature" class="large" type="text" readonly data-bind="value: signature.base64Signature"></li>
+          <li><label for="base64-signature">un-encoded base64 signature</label><input id="base64-signature" class="large" type="text" readonly data-bind="value: signature.base64Signature"></li>
           <li><label for="signature">signature</label><input id="signature" class="large" type="text" readonly data-bind="value: signature.signature"></li>
           <li><label for="authorization-header">authorization header</label><textarea id="authorization-header" readonly data-bind="value: signature.authorizationHeader"></textarea></li>
 
@@ -56,11 +56,14 @@
       </div>
     </form>
     
-    <script src="underscore-min.js" type="text/javascript"></script>
-    <script type="text/javascript" src="hmac-sha1.js"></script>
-    <script type="text/javascript" src="enc-base64-min.js"></script>
-    <script type="text/javascript" src="knockout-2.0.0.js"></script>
+    <script src="lib/underscore/underscore-min.js" type="text/javascript"></script>
+    <script src="lib/oauth-signature/src/lib/cryptojs/hmac-sha1.js" type="text/javascript"></script>
+    <script src="lib/oauth-signature/src/lib/cryptojs/enc-base64-min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="lib/knockout/knockout-2.0.0.js"></script>
 
+    <script src="lib/oauth-signature/src/lib/url.js" type="text/javascript"></script>
+    <script src="lib/oauth-signature/src/app/oauth-signature.js" type="text/javascript"></script>
+    <script src="oauth-signer-old.js" type="text/javascript"></script>
     <script src="oauth.js" type="text/javascript"></script>
     <script src="ui.js" type="text/javascript"></script>
   </body>
