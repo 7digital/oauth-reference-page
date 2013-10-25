@@ -1,0 +1,13 @@
+{
+  "name": "oauth-reference-page",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/7digital/oauth-reference-page.git"
+  },
+  "volo": {
+    "dependencies": {
+      "lib/oauth-signature": "github:bettiolo/oauth-signature/master#src"
+    }
+  }
+}
