@@ -71,7 +71,7 @@
 	            console.log('Old base string: ' + baseStringOld);
 
 	            if (signatureNew != signatureOld) {
-		            console.log('The signatures are different');
+		            throw new Error('The signatures are different');
 	            }
 
                 return signatureNew;
