@@ -61,9 +61,17 @@
 	            var signatureNew = oauthSignature.generate(self.method(), self.url(), oauthSignerOld.queryStringFields(), self.consumerSecret(), self.tokenSecret());
 	            var signatureOld = oauthSignerOld.percentEncode(oauthSignerOld.base64Signature());
 
+	            var baseStringNew = new oauthSignature.SignatureBaseString(self.method(), self.url(), oauthSignerOld.queryStringFields()).generate();
+	            var baseStringOld = self.baseString();
+
+	            console.log('New signature: ' + signatureNew);
+	            console.log('Old signature: ' + signatureOld);
+
+	            console.log('New base string: ' + baseStringNew);
+	            console.log('Old base string: ' + baseStringOld);
+
 	            if (signatureNew != signatureOld) {
-		            alert('The signatures are different');
-		            throw new Error('The signatures are different')
+		            console.log('The signatures are different');
 	            }
 
                 return signatureNew;
