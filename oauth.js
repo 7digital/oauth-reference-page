@@ -23,6 +23,32 @@
             fields: function() {
                 return {};
             },
+	        oauthParameters: function() {
+		        var queryFields;
+		        queryFields = {
+			        oauth_consumer_key: this.consumerKey(),
+			        oauth_nonce: this.nonce(),
+			        oauth_timestamp: this.timestamp(),
+			        oauth_signature_method: this.signatureMethod()
+		        };
+		        if (this.token()) {
+			        queryFields["oauth_token"] = this.token();
+		        }
+		        if (this.version()) {
+			        queryFields["oauth_version"] = this.version();
+		        }
+		        return queryFields;
+	        },
+	        parameters: function() {
+		        var parameters, fields;
+		        parameters = this.oauthParameters();
+		        fields = this.fields();
+		        _.each(_.keys(fields), function(field) {
+			        return parameters[field] = fields[field];
+		        });
+		        return parameters;
+	        },
+
             queryString: function() {
                 var queryArguments, orderedFields;
                 queryArguments = oauthSignerOld.queryStringFields();
@@ -32,16 +58,14 @@
                 }).join("&");
             },
             authorizationHeader: function() {
-                var self, fields;
-                self = this;
+                var fields;
                 fields = oauthSignerOld.oauthParameters();
-                fields["oauth_signature"] = self.base64Signature();
+                fields["oauth_signature"] = this.base64Signature();
                 return oauthSignerOld.headerEncoded(fields);
             },
             baseString: function() {
-                var self;
-                self = this;
-                return oauthSignerOld.parameterEncoded([ self.method(), self.url(), self.queryString() ]);
+	            return new oauthSignature.SignatureBaseString(this.method(), this.url(), this.parameters())
+		            .generate();
             },
             hmacKey: function() {
                 var self;
@@ -54,24 +78,26 @@
                 });
             },
             signature: function() {
-                var self;
-                self = this;
 
-	            // var signatureNew = oauthSignature.generate(self.method(), self.url(), self.queryString(), self.consumerSecret(), self.tokenSecret());
-	            var signatureNew = oauthSignature.generate(self.method(), self.url(), oauthSignerOld.queryStringFields(), self.consumerSecret(), self.tokenSecret());
-	            var signatureOld = oauthSignerOld.percentEncode(oauthSignerOld.base64Signature());
+	            var signatureNew = oauthSignature.generate(this.method(), this.url(), this.parameters(),
+	                                                       this.consumerSecret(), this.tokenSecret());
+	            var signatureOld = oauthSignerOld.encodedBase64Signature();
 
-	            var baseStringNew = new oauthSignature.SignatureBaseString(self.method(), self.url(), oauthSignerOld.queryStringFields()).generate();
-	            var baseStringOld = self.baseString();
+	            console.info('New signature: ' + signatureNew);
+	            console.info('Old signature: ' + signatureOld);
 
-	            console.log('New signature: ' + signatureNew);
-	            console.log('Old signature: ' + signatureOld);
+	            if (baseStringNew != baseStringOld) {
+		            console.warn('WARNING: The base strings are different');
+	            }
 
-	            console.log('New base string: ' + baseStringNew);
-	            console.log('Old base string: ' + baseStringOld);
+	            var baseStringNew =this.baseString();
+	            var baseStringOld = oauthSignerOld.baseString();
+
+	            console.info('New base string: ' + baseStringNew);
+	            console.info('Old base string: ' + baseStringOld);
 
 	            if (signatureNew != signatureOld) {
-		            throw new Error('The signatures are different');
+		            console.warn('WARNING: The signatures are different');
 	            }
 
                 return signatureNew;

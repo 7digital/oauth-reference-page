@@ -132,6 +132,9 @@
 			},
 			percentEncode: function(s) {
 				return encodeURIComponent(s).replace(/\*/g, "%2A");
+			},
+			encodedBase64Signature: function() {
+				return this.percentEncode(this.base64Signature());
 			}
 		}, parameters);
 	};
