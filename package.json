@@ -9,12 +9,11 @@
     "baseUrl": "lib",
     "dependencies": {
       "oauth-signature": "github:bettiolo/oauth-signature-js/master#src/app/oauth-signature.js",
-      "url.min": "github:websanova/js-url/v1.8.4#url.min.js",
+      "url.min": "github:websanova/js-url/v1.8.5#url.min.js",
       "underscore-min": "github:jashkenas/underscore/1.5.2#underscore-min.js",
       "knockout": "github:knockout/knockout/v2.0.0",
       "cryptojs/hmac-sha1": "https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/hmac-sha1.js",
-      "cryptojs/enc-base64-min": "https://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js",
-      "../lib-dev/qunit": "github:jquery/qunit/v1.12.0#qunit"
+      "cryptojs/enc-base64-min": "https://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js"
     }
   }
 }
