@@ -68,7 +68,7 @@
             return self.parameters.nonce(Math.floor(Math.random() * 1e9).toString());
         };
         self.newNonce();
-        self.methodOptions = ko.observableArray([ "GET", "POST", "PUT", "DELETE" ]);
+        self.methodOptions = ko.observableArray([ "GET", "POST", "PUT", "DELETE", "HEAD" ]);
         self.encodingOptions = ko.observableArray([ "application/json", "application/xml" ]);
         self.oauthSignature = ko.computed(function() {
             return oauthSigner(self.parameters);
