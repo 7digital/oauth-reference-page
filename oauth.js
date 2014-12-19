@@ -119,7 +119,7 @@
                         return "curl -X " + self.method() + " '" + self.url() + "' -d '" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                     }
                 } else {
-                    return "curl -X DELETE '" + self.url() + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
+                    return "curl -X " + self.method() + " '" + self.url() + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                 }
             }
         }, parameters);
