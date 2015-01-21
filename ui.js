@@ -1,12 +1,8 @@
 ((function() {
-    var self, oauthParameters;
-    self = this;
-    oauthParameters = function() {
+    var oauthParameters = function() {
         var self, fieldsArray;
         self = this;
         self.timestampForNow = function() {
-            var self;
-            self = this;
             return Math.floor((new Date).getTime() / 1e3);
         };
         fieldsArray = ko.observableArray([]);
@@ -22,11 +18,8 @@
             version: ko.observable("1.0"),
             body: ko.observable(""),
             bodyEncoding: ko.observable("application/json"),
-            fieldsArray: ko.observableArray(),
             fields: ko.observable,
             addField: function() {
-                var self;
-                self = this;
                 return fieldsArray.push({
                     value: ko.observable(""),
                     name: ko.observable("")
@@ -34,26 +27,19 @@
             },
             fieldsArray: fieldsArray,
             removeField: function() {
-                var self;
-                self = this;
                 return fieldsArray.remove(this);
             },
             fields: ko.computed(function() {
-                var f, gen1_items, gen2_i;
-                f = {};
-                gen1_items = fieldsArray();
-                for (gen2_i = 0; gen2_i < gen1_items.length; gen2_i++) {
-                    var gen3_forResult;
-                    gen3_forResult = void 0;
-                    if (function(gen2_i) {
-                        var field;
-                        field = gen1_items[gen2_i];
-                        f[field.name()] = field.value();
-                    }(gen2_i)) {
-                        return gen3_forResult;
+                var fieldsToReturn, observedFormFields, fieldIndex;
+                fieldsToReturn = {};
+                observedFormFields = fieldsArray();
+                for (fieldIndex = 0; fieldIndex < observedFormFields.length; fieldIndex++) {
+                    var field = observedFormFields[fieldIndex];
+                    if (field.name()) {
+                        fieldsToReturn[field.name()] = field.value();
                     }
                 }
-                return f;
+                return fieldsToReturn;
             })
         };
         self.refreshTimestamp = function() {
@@ -102,7 +88,6 @@
                 return self.oauthSignature().curl();
             })
         };
-        return undefined;
     };
     window.oauthPage = new oauthParameters;
     ko.applyBindings(oauthPage);
