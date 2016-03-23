@@ -110,17 +110,23 @@
             curl: function() {
                 var self;
                 self = this;
+
+                var curlCommand = "";
                 if (self.method() === "GET") {
-                    return "curl '" + self.url() + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
+                    curlCommand = "curl '" + self.url() + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                 } else if (self.method() === "POST" || self.method() === "PUT") {
                     if (self.body()) {
-                        return "curl -X " + self.method() + " '" + oauthSignerOld.urlAndFields() + "' -d '" + self.body() + "' -H 'Authorization: " + self.authorizationHeader() + "' -H 'Content-Type: " + self.bodyEncoding() + "'";
+                        curlCommand = "curl -X " + self.method() + " '" + oauthSignerOld.urlAndFields() + "' -d '" + self.body() + "' -H 'Authorization: " + self.authorizationHeader() + "' -H 'Content-Type: " + self.bodyEncoding() + "'";
                     } else {
-                        return "curl -X " + self.method() + " '" + self.url() + "' -d '" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
+                        curlCommand = "curl -X " + self.method() + " '" + self.url() + "' -d '" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                     }
                 } else {
-                    return "curl -X " + self.method() + " '" + self.url() + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
+                    curlCommand = "curl -X " + self.method() + " '" + self.url() + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                 }
+                if (parameters.curlOutput()) {
+                    curlCommand += ' -o ' + parameters.curlOutput();
+                }
+                return curlCommand;
             }
         }, parameters);
     };

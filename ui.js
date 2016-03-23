@@ -18,6 +18,7 @@
             version: ko.observable("1.0"),
             body: ko.observable(""),
             bodyEncoding: ko.observable("application/json"),
+            curlOutput: ko.observable(""),
             fields: ko.observable,
             addField: function() {
                 return fieldsArray.push({

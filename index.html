@@ -55,6 +55,7 @@
           <li><label for="authorization-header">authorization header</label><textarea id="authorization-header" readonly data-bind="value: signature.authorizationHeader"></textarea></li>
 
           <li><a target="signed_request" data-bind="attr: {href: signature.signedUrl}, text: signature.prettySignedUrl"></a></li>
+          <li><label for="output">Output</label><input id="output" type="text" data-bind="value: parameters.curlOutput, valueUpdate: 'keyup'"/></li>
           <li><label for="curl">curl</label><textarea id="curl" class="curl" readonly data-bind="text: signature.curl"></textarea></li>
         </ul>
       </div>
