@@ -47,3 +47,7 @@ textarea.curl {
   width: 500px;
   height: 200px;
 }
+.title {
+  margin-bottom: 0;
+  margin-top: 0;
+}
