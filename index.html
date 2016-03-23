@@ -55,8 +55,10 @@
           <li><label for="authorization-header">authorization header</label><textarea id="authorization-header" readonly data-bind="value: signature.authorizationHeader"></textarea></li>
 
           <li><a target="signed_request" data-bind="attr: {href: signature.signedUrl}, text: signature.prettySignedUrl"></a></li>
-          <li><label for="output">output file</label><input id="output" type="text" data-bind="value: parameters.curlParameters.output, valueUpdate: 'keyup'"/></li>
-          <li><label for="verbose">verbose</label><input id="verbose" type="checkbox" data-bind="checked: parameters.curlParameters.verbose"/></li>
+          <div class="curl-options">
+            <div class="output"><li><label for="output">output file</label><input id="output" type="text" data-bind="value: parameters.curlParameters.output, valueUpdate: 'keyup'"/></li></div>
+            <div class="verbose"><li><label for="verbose">verbose</label><input id="verbose" type="checkbox" data-bind="checked: parameters.curlParameters.verbose"/></li></div>
+          </div>
           <li><label for="curl">curl</label><textarea id="curl" class="curl" readonly data-bind="text: signature.curl"></textarea></li>
         </ul>
       </div>

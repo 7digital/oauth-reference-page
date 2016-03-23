@@ -7,6 +7,16 @@ div.parameters, div.signature {
   vertical-align: top;
   margin: 0 20px;
 }
+.curl-options, .curl-options div {
+  text-align: left;
+  display: inline-block;
+  margin-right: 5pt;
+}
+
+.curl-options label {
+  margin-right: 5pt
+}
+
 input[type=text] {
   width: 200px;
 }
