@@ -123,8 +123,12 @@
                 } else {
                     curlCommand = "curl -X " + self.method() + " '" + self.url() + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                 }
-                if (parameters.curlOutput()) {
-                    curlCommand += ' -o ' + parameters.curlOutput();
+                if (parameters.curlParameters.output()) {
+                    curlCommand += ' -o ' + parameters.curlParameters.output();
+                }
+
+                if (parameters.curlParameters.verbose()) {
+                    curlCommand += ' -v';
                 }
                 return curlCommand;
             }
