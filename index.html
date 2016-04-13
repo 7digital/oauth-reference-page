@@ -21,7 +21,7 @@
           <li><label for="consumer-secret">consumer secret</label><input id="consumer-secret" type="text" data-bind="value: parameters.consumerSecret, valueUpdate: 'keyup'"></li>
           <li><label for="token">token (optional)</label><input id="token" type="text" data-bind="value: parameters.token, valueUpdate: 'keyup'"></li>
           <li><label for="token-secret">token secret (optional)</label><input id="token-secret" type="text" data-bind="value: parameters.tokenSecret, valueUpdate: 'keyup'"></li>
-          <li><label for="nonce">nonce</label><input id="nonce" type="text" data-bind="value: parameters.nonce, valueUpdate: 'keyup'"> <a href="#" data-bind="click: newNonce">new</a></li>
+          <li><label for="nonce">nonce</label><input id="nonce" type="text" data-bind="value: parameters.nonce, valueUpdate: 'keyup'"> <a href="#" data-bind="click: newNonce">new</a><button class="left-margin" data-bind="click: refreshBoth">Refresh both</button></li>
           <li><label for="timestamp">timestamp</label><input id="timestamp" type="text" data-bind="value: parameters.timestamp, valueUpdate: 'keyup'"> <a href="#" data-bind="click: refreshTimestamp">refresh</a></li>
           <li><label for="fields">fields</label>
             <div id="fields" data-bind="foreach: parameters.fieldsArray" class="fields">
