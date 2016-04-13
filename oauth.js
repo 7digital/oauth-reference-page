@@ -130,6 +130,18 @@
                 if (parameters.curlParameters.verbose()) {
                     curlCommand += ' -v';
                 }
+
+                if (parameters.headersArray().length > 0) {
+                    parameters.headersArray().forEach(function(header) {
+                        if (header.name()) {
+                            curlCommand += ' -H "' + header.name();
+                            if (header.value()) {
+                              curlCommand += ':' + header.value();  
+                            }   
+                            curlCommand += '"';
+                        }
+                    })
+                }
                 return curlCommand;
             }
         }, parameters);

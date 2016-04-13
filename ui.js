@@ -1,11 +1,12 @@
 ((function() {
     var oauthParameters = function() {
-        var self, fieldsArray;
+        var self, fieldsArray, headersArray;
         self = this;
         self.timestampForNow = function() {
             return Math.floor((new Date).getTime() / 1e3);
         };
         fieldsArray = ko.observableArray([]);
+        headersArray = ko.observableArray([]);
         self.parameters = {
             method: ko.observable("GET"),
             url: ko.observable(""),
@@ -44,7 +45,28 @@
                     }
                 }
                 return fieldsToReturn;
-            })
+            }),
+            addHeader: function() {
+                return headersArray.push({
+                    value: ko.observable(""),
+                    name: ko.observable("")
+                });
+            },
+            headersArray: headersArray,
+            removeHeader: function() {
+                return headersArray.remove(this);
+            },
+            headers: ko.computed(function() {
+                var headersToReturn = {}, observedHeaders, headerIndex;
+                var observedHeaders = headersArray();
+                for (headerIndex = 0; headerIndex < observedHeaders.length; headerIndex++) {
+                    var header = observedHeaders[headerIndex];
+                    if (header.name()) {
+                        headersToReturn[header.name()] = header.value();
+                    }
+                }
+                return headersToReturn;
+            }),
         };
         self.refreshTimestamp = function() {
             var self;

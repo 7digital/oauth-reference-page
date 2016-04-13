@@ -59,6 +59,16 @@
             <div class="output"><li><label for="output">output file</label><input id="output" type="text" data-bind="value: parameters.curlParameters.output, valueUpdate: 'keyup'"/></li></div>
             <div class="verbose"><li><label for="verbose">verbose</label><input id="verbose" type="checkbox" data-bind="checked: parameters.curlParameters.verbose"/></li></div>
           </div>
+          <li><label for="headers">headers</label>
+            <div id="headers" data-bind="foreach: parameters.headersArray" class="headers">
+              <div>
+              <label>name</label> <input class="header-name" type="text" data-bind="value: name, valueUpdate: 'keyup'">
+              <label>value</label> <input class="header-value" type="text" data-bind="value: value, valueUpdate: 'keyup'">
+              <a href="#" data-bind="click: $parent.parameters.removeHeader">remove</a>
+              </div>
+            </div>
+            <button data-bind="click: parameters.addHeader">add</button>
+          </li>
           <li><label for="curl">curl</label><textarea id="curl" class="curl" readonly data-bind="text: signature.curl"></textarea></li>
         </ul>
       </div>

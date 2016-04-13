@@ -17,6 +17,11 @@ div.parameters, div.signature {
   margin-right: 5pt
 }
 
+h2 {
+  margin-top: 10px;
+  margin-bottom: 10px
+}
+
 input[type=text] {
   width: 200px;
 }
@@ -37,6 +42,7 @@ ul > li > label {
 ul {
   list-style: none;
   padding-left: 0;
+  margin-top: 10px;
 }
 li {
   margin-bottom: 5pt;
@@ -51,7 +57,7 @@ textarea.body {
 }
 textarea {
   width: 500px;
-  height: 80px;
+  height: 60px;
 }
 textarea.curl {
   width: 500px;
