@@ -112,7 +112,7 @@
                 return self.oauthSignature().signedUrl();
             }),
             prettySignedUrl: ko.computed(function() {
-                return self.parameters.method() + " " + self.parameters.url() + "?...";
+                return self.parameters.method() + " " + self.parameters.url().substring(0, 60) + "?...";
             }),
             curl: ko.computed(function() {
                 return self.oauthSignature().curl();
