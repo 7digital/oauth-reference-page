@@ -74,13 +74,13 @@
 				fields["oauth_signature"] = this.base64Signature();
 				return this.headerEncoded(fields);
 			},
-			urlAndFields: function() {
+			urlAndFields: function(url) {
 				var encodedFields;
 				encodedFields = this.urlEncodedFields();
 				if (encodedFields) {
-					return this.url() + "?" + encodedFields;
+					return url + "?" + encodedFields;
 				} else {
-					return this.url();
+					return url;
 				}
 			},
 			parameterEncoded: function(fields) {
@@ -122,7 +122,7 @@
 					return "curl '" + this.url() + "?" + this.queryString() + "&oauth_signature=" + this.signature() + "'";
 				} else if (this.method() === "POST" || this.method() === "PUT") {
 					if (this.body()) {
-						return "curl -X " + this.method() + " '" + this.urlAndFields() + "' -d '" + this.body() + "' -H 'Authorization: " + this.authorizationHeader() + "' -H 'Content-Type: " + this.bodyEncoding() + "'";
+						return "curl -X " + this.method() + " '" + this.urlAndFields(this.url()) + "' -d '" + this.body() + "' -H 'Authorization: " + this.authorizationHeader() + "' -H 'Content-Type: " + this.bodyEncoding() + "'";
 					} else {
 						return "curl -X " + this.method() + " '" + this.url() + "' -d '" + this.queryString() + "&oauth_signature=" + this.signature() + "'";
 					}

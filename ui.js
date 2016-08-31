@@ -23,6 +23,7 @@
                 output: ko.observable(""),
                 verbose: ko.observable(false)
             },
+            actualUrl: ko.observable(""),
             fields: ko.observable,
             addField: function() {
                 return fieldsArray.push({

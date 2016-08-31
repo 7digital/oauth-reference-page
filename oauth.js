@@ -111,17 +111,22 @@
                 var self;
                 self = this;
 
+                var url = self.url()
+                if (self.actualUrl()) {
+                  url = self.actualUrl()
+                }
+
                 var curlCommand = "";
                 if (self.method() === "GET") {
-                    curlCommand = "curl '" + self.url() + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
+                    curlCommand = "curl '" + url + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                 } else if (self.method() === "POST" || self.method() === "PUT") {
                     if (self.body()) {
-                        curlCommand = "curl -X " + self.method() + " '" + oauthSignerOld.urlAndFields() + "' -d '" + self.body() + "' -H 'Authorization: " + self.authorizationHeader() + "' -H 'Content-Type: " + self.bodyEncoding() + "'";
+                        curlCommand = "curl -X " + self.method() + " '" + oauthSignerOld.urlAndFields(url) + "' -d '" + self.body() + "' -H 'Authorization: " + self.authorizationHeader() + "' -H 'Content-Type: " + self.bodyEncoding() + "'";
                     } else {
-                        curlCommand = "curl -X " + self.method() + " '" + self.url() + "' -d '" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
+                        curlCommand = "curl -X " + self.method() + " '" + url + "' -d '" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                     }
                 } else {
-                    curlCommand = "curl -X " + self.method() + " '" + self.url() + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
+                    curlCommand = "curl -X " + self.method() + " '" + url + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                 }
                 if (parameters.curlParameters.output()) {
                     curlCommand += ' -o ' + parameters.curlParameters.output();
@@ -136,8 +141,8 @@
                         if (header.name()) {
                             curlCommand += ' -H "' + header.name();
                             if (header.value()) {
-                              curlCommand += ':' + header.value();  
-                            }   
+                              curlCommand += ':' + header.value();
+                            }
                             curlCommand += '"';
                         }
                     })
