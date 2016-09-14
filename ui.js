@@ -113,7 +113,11 @@
                 return self.oauthSignature().signedUrl();
             }),
             prettySignedUrl: ko.computed(function() {
-                return self.parameters.method() + " " + self.parameters.url().substring(0, 60) + "?...";
+                var url = self.parameters.url()
+                if (self.parameters.actualUrl()) {
+                  url = self.parameters.actualUrl()
+                }
+                return self.parameters.method() + " " + url.substring(0, 60) + "?...";
             }),
             curl: ko.computed(function() {
                 return self.oauthSignature().curl();
