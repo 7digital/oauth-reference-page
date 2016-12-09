@@ -8,16 +8,4 @@ A HTML page that computes an OAuth 1.0 signature, showing all the workings so yo
 
 It supports POSTs in the form of `application/x-www-form-urlencoded`, as well as POSTs of `application/xml` and `application/json` using the `Authorization` header - just put the XML or JSON into the 'body' field and set the 'body encoding' accordingly.
 
-## Developers - OUTDATED
-
-The page is hosted on Github Pages, so be sure to merge your changes into the `gh-pages` branch to see them.
-
-The JavaScript is generated from the PogoScript files. Once you have [installed PogoScript](https://github.com/featurist/pogoscript), just:
-
-	pogo -cw *.pogo
-
-### Testing - OUTDATED
-
-Tests are written using [Zombie.js](https://github.com/assaf/zombie) and [mocha](http://visionmedia.github.com/mocha/).
-
-    mocha test/spec.pogo
+If you're using POST or PUT, it's best to copy the curl command output into a terminal window
