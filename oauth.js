@@ -125,7 +125,7 @@
                     curlCommand = "curl '" + url + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                 } else if (self.method() === "POST" || self.method() === "PUT") {
                     if (self.body()) {
-                        curlCommand = "curl -X " + self.method() + " '" + oauthSignerOld.urlAndFields(ur) + "' -d '" + self.body() + "' -H 'Authorization: " + self.authorizationHeader() + "' -H 'Content-Type: " + self.bodyEncoding() + "'";
+                        curlCommand = "curl -X " + self.method() + " '" + oauthSignerOld.urlAndFields(url) + "' -d '" + self.body() + "' -H 'Authorization: " + self.authorizationHeader() + "' -H 'Content-Type: " + self.bodyEncoding() + "'";
                     } else {
                         curlCommand = "curl -X " + self.method() + " '" + url + "' -d '" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
                     }
