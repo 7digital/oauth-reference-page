@@ -109,7 +109,11 @@
             <input id="actual-url" class="large" data-bind="value: parameters.actualUrl, valueUpdate: 'keyup'" />
           </li>
           <li>
-            <a target="signed_request" data-bind="attr: {href: signature.signedUrl}, text: signature.prettySignedUrl"></a>
+            <a target="signed_request" data-bind="
+                attr: {href: signature.signedUrl},
+                text: signature.prettySignedUrl,
+                visible: parameters.method() === 'GET'
+            "></a>
           </li>
           <li class="curl-options">
             <div class="output">
