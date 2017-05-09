@@ -1,129 +1,96 @@
-((function() {
-    var oauthParameters = function() {
-        var self, fieldsArray, headersArray;
-        self = this;
-        self.timestampForNow = function() {
-            return Math.floor((new Date).getTime() / 1e3);
-        };
-        fieldsArray = ko.observableArray([]);
-        headersArray = ko.observableArray([]);
+(function () {
+    function oauthParameters() {
+        var self = this;
+        var fields = ko.observableArray([]);
+        var headers = ko.observableArray([]);
+
         self.parameters = {
-            method: ko.observable("GET"),
-            url: ko.observable(""),
-            consumerKey: ko.observable(""),
-            consumerSecret: ko.observable(""),
-            token: ko.observable(""),
-            tokenSecret: ko.observable(""),
-            nonce: ko.observable(""),
-            timestamp: ko.observable(""),
-            version: ko.observable("1.0"),
-            body: ko.observable(""),
-            bodyEncoding: ko.observable("application/json"),
+            method: ko.observable('GET'),
+            url: ko.observable(''),
+            consumerKey: ko.observable(''),
+            consumerSecret: ko.observable(''),
+            token: ko.observable(''),
+            tokenSecret: ko.observable(''),
+            nonce: ko.observable(''),
+            timestamp: ko.observable(''),
+            version: ko.observable('1.0'),
+            body: ko.observable(''),
+            bodyEncoding: ko.observable('application/json'),
             curlParameters: {
-                output: ko.observable(""),
+                output: ko.observable(''),
                 verbose: ko.observable(false)
             },
-            actualUrl: ko.observable(""),
-            fields: ko.observable,
-            addField: function() {
-                return fieldsArray.push({
-                    value: ko.observable(""),
-                    name: ko.observable("")
+            actualUrl: ko.observable(''),
+            addField: function () {
+                fields.push({
+                    name: ko.observable(''),
+                    value: ko.observable('')
                 });
             },
-            fieldsArray: fieldsArray,
-            removeField: function() {
-                return fieldsArray.remove(this);
-            },
-            fields: ko.computed(function() {
-                var fieldsToReturn, observedFormFields, fieldIndex;
-                fieldsToReturn = {};
-                observedFormFields = fieldsArray();
-                for (fieldIndex = 0; fieldIndex < observedFormFields.length; fieldIndex++) {
-                    var field = observedFormFields[fieldIndex];
-                    if (field.name()) {
-                        fieldsToReturn[field.name()] = field.value();
-                    }
-                }
-                return fieldsToReturn;
-            }),
-            addHeader: function() {
-                return headersArray.push({
-                    value: ko.observable(""),
-                    name: ko.observable("")
+            fields: fields,
+            removeField: function () { return fields.remove(this); },
+            addHeader: function () {
+                headers.push({
+                    name: ko.observable(''),
+                    value: ko.observable('')
                 });
             },
-            headersArray: headersArray,
-            removeHeader: function() {
-                return headersArray.remove(this);
-            },
-            headers: ko.computed(function() {
-                var headersToReturn = {}, observedHeaders, headerIndex;
-                var observedHeaders = headersArray();
-                for (headerIndex = 0; headerIndex < observedHeaders.length; headerIndex++) {
-                    var header = observedHeaders[headerIndex];
-                    if (header.name()) {
-                        headersToReturn[header.name()] = header.value();
-                    }
-                }
-                return headersToReturn;
-            }),
+            headers: headers,
+            removeHeader: function () { return headers.remove(this); }
         };
-        self.refreshTimestamp = function() {
-            var self;
-            self = this;
-            return self.parameters.timestamp(self.timestampForNow());
+
+        self.refreshTimestamp = function () {
+            var nowInSeconds = Math.floor((new Date()).getTime() / 1000);
+            return self.parameters.timestamp(nowInSeconds);
         };
+
+        self.newNonce = function () {
+            var nonce = Math.floor(Math.random() * 1e9);
+            return self.parameters.nonce(nonce);
+        };
+
         self.refreshTimestamp();
-        self.newNonce = function() {
-            var self;
-            self = this;
-            return self.parameters.nonce(Math.floor(Math.random() * 1e9).toString());
-        };
         self.newNonce();
-        self.refreshBoth = function() {
-            self.newNonce();
-            self.refreshTimestamp();
-        }
-        self.methodOptions = ko.observableArray([ "GET", "POST", "PUT", "DELETE", "HEAD" ]);
-        self.encodingOptions = ko.observableArray([ "application/json", "application/xml" ]);
-        self.oauthSignature = ko.computed(function() {
+
+        self.methodOptions = ko.observableArray([ 'GET', 'POST', 'PUT', 'DELETE', 'HEAD' ]);
+        self.encodingOptions = ko.observableArray([ 'application/json', 'application/xml' ]);
+        self.oauthSignature = ko.computed(function () {
             return oauthSigner(self.parameters);
         });
         self.signature = {
-            queryString: ko.computed(function() {
+            queryString: ko.computed(function () {
                 return self.oauthSignature().queryString();
             }),
-            baseString: ko.computed(function() {
+            baseString: ko.computed(function () {
                 return self.oauthSignature().baseString();
             }),
-            hmacKey: ko.computed(function() {
+            hmacKey: ko.computed(function () {
                 return self.oauthSignature().hmacKey();
             }),
-            base64Signature: ko.computed(function() {
+            base64Signature: ko.computed(function () {
                 return self.oauthSignature().base64Signature();
             }),
-            signature: ko.computed(function() {
+            signature: ko.computed(function () {
                 return self.oauthSignature().signature();
             }),
-            authorizationHeader: ko.computed(function() {
+            authorizationHeader: ko.computed(function () {
                 return self.oauthSignature().authorizationHeader();
             }),
-            signedUrl: ko.computed(function() {
+            signedUrl: ko.computed(function () {
                 return self.oauthSignature().signedUrl();
             }),
-            prettySignedUrl: ko.computed(function() {
+            prettySignedUrl: ko.computed(function () {
                 var url = self.parameters.url()
                 if (self.parameters.actualUrl()) {
                   url = self.parameters.actualUrl()
                 }
-                return self.parameters.method() + " " + url.substring(0, 60) + "?...";
+                return self.parameters.method() + ' ' + url.substring(0, 60) + '?...';
             }),
-            curl: ko.computed(function() {
+            curl: ko.computed(function () {
                 return self.oauthSignature().curl();
             })
         };
     };
-    window.oauthPage = new oauthParameters;
+    window.oauthPage = new oauthParameters();
     ko.applyBindings(oauthPage);
-})).call(this);
+}).call(this);

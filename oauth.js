@@ -1,136 +1,125 @@
-((function() {
-    window.oauthSigner = function(parameters) {
-	    var oauthSignerOld = window.oauthSignerOld(parameters);
-        return _.extend({
-            token: function() {
-                return "";
+(function () {
+    window.oauthSigner = function (parameters) {
+        return {
+            signatureMethod: function () { return 'HMAC-SHA1'; },
+            oauthParameters: function () {
+                var params = {
+                    oauth_consumer_key: parameters.consumerKey(),
+                    oauth_nonce: parameters.nonce(),
+                    oauth_timestamp: parameters.timestamp(),
+                    oauth_signature_method: this.signatureMethod()
+                };
+                if (parameters.token()) {
+                    params['oauth_token'] = parameters.token();
+                }
+                if (parameters.version()) {
+                    params['oauth_version'] = parameters.version();
+                }
+                return params;
             },
-            tokenSecret: function() {
-                return "";
+            fields: function () {
+                var fields = parameters.fields().reduce(function (fields, field) {
+                    if (field.name()) {
+                        fields[field.name()] = field.value();
+                    }
+                    return fields;
+                }, {});
+                return _.extend(this.oauthParameters(), fields);
             },
-            version: function() {
-                return "1.0";
+            percentEncode: function (s) {
+                return encodeURIComponent(s).replace(/\*/g, '%2A');
             },
-            signatureMethod: function() {
-                return "HMAC-SHA1";
+            queryString: function () {
+                var self = this;
+                var fields = this.fields();
+                var fieldNames = _.keys(fields).sort();
+                return fieldNames.map(function (name) {
+                    return name + '=' + self.percentEncode(fields[name]);
+                }).join('&');
             },
-            method: function() {
-                return "GET";
+            headerEncoded: function (fields) {
+                return _.keys(fields).map(function (key) {
+                    return key + '="' + encodeURIComponent(fields[key]) + '"';
+                }).join(", ");
             },
-            timestamp: function() {
-                return Math.floor((new Date).getTime() / 1e3);
+            authorizationHeader: function () {
+                var fields = this.oauthParameters();
+                fields['oauth_signature'] = this.base64Signature();
+                return this.headerEncoded(fields);
             },
-            fields: function() {
-                return {};
+            baseString: function () {
+                return new oauthSignature.SignatureBaseString(
+                    parameters.method(),
+                    parameters.url(),
+                    this.fields()
+                ).generate();
             },
-	        oauthParameters: function() {
-		        var queryFields;
-		        queryFields = {
-			        oauth_consumer_key: this.consumerKey(),
-			        oauth_nonce: this.nonce(),
-			        oauth_timestamp: this.timestamp(),
-			        oauth_signature_method: this.signatureMethod()
-		        };
-		        if (this.token()) {
-			        queryFields["oauth_token"] = this.token();
-		        }
-		        if (this.version()) {
-			        queryFields["oauth_version"] = this.version();
-		        }
-		        return queryFields;
-	        },
-	        parameters: function() {
-		        var parameters, fields;
-		        parameters = this.oauthParameters();
-		        fields = this.fields();
-		        _.each(_.keys(fields), function(field) {
-			        return parameters[field] = fields[field];
-		        });
-		        return parameters;
-	        },
+            parameterEncoded: function (fields) {
+                return fields.map(this.percentEncode).join('&');
+            },
+            hmacKey: function () {
+                return this.parameterEncoded([
+                    parameters.consumerSecret(),
+                    parameters.tokenSecret()
+                ]);
+            },
+            hmac: function (gen1_options) {
+                var encoding = (gen1_options && gen1_options.encoding) || 'binary';
+                var binaryHash = CryptoJS.HmacSHA1(this.baseString(), this.hmacKey());
 
-            queryString: function() {
-                var queryArguments, orderedFields;
-                queryArguments = oauthSignerOld.queryStringFields();
-                orderedFields = _.keys(queryArguments).sort();
-                return _.map(orderedFields, function(fieldName) {
-                    return fieldName + "=" + oauthSignerOld.percentEncode(queryArguments[fieldName]);
-                }).join("&");
+                if (encoding === 'base64') {
+                    return binaryHash.toString(CryptoJS.enc.Base64);
+                }
+
+                return binaryHash;
             },
-            authorizationHeader: function() {
-                var fields;
-                fields = oauthSignerOld.oauthParameters();
-                fields["oauth_signature"] = this.base64Signature();
-                return oauthSignerOld.headerEncoded(fields);
+            base64Signature: function () {
+                return this.hmac({ encoding: 'base64' });
             },
-            baseString: function() {
-	            return new oauthSignature.SignatureBaseString(this.method(), this.url(), this.parameters())
-		            .generate();
-            },
-            hmacKey: function() {
-                var self;
-                self = this;
-                return oauthSignerOld.parameterEncoded([ self.consumerSecret(), self.tokenSecret() ]);
-            },
-            base64Signature: function() {
-                return oauthSignerOld.hmac({
-                    encoding: "base64"
-                });
-            },
-            signature: function() {
-
-	            var signatureNew = oauthSignature.generate(this.method(), this.url(), this.parameters(),
-	                                                       this.consumerSecret(), this.tokenSecret());
-	            var signatureOld = oauthSignerOld.encodedBase64Signature();
-
-	            console.info('New signature: ' + signatureNew);
-	            console.info('Old signature: ' + signatureOld);
-
-	            if (baseStringNew != baseStringOld) {
-		            console.warn('WARNING: The base strings are different');
-	            }
-
-	            var baseStringNew =this.baseString();
-	            var baseStringOld = oauthSignerOld.baseString();
-
-	            console.info('New base string: ' + baseStringNew);
-	            console.info('Old base string: ' + baseStringOld);
-
-	            if (signatureNew != signatureOld) {
-		            console.warn('WARNING: The signatures are different');
-	            }
+            signature: function () {
+                var signatureNew = oauthSignature.generate(
+                    parameters.method(),
+                    parameters.url(),
+                    this.fields(),
+                    parameters.consumerSecret(),
+                    parameters.tokenSecret()
+                );
 
                 return signatureNew;
             },
-            signedUrl: function() {
-                var self;
-                self = this;
-                var url = self.url()
-                if (self.actualUrl()) {
-                  url = self.actualUrl()
+            signedUrl: function () {
+                var url = parameters.url()
+                if (parameters.actualUrl()) {
+                    url = parameters.actualUrl()
                 }
-                return url + "?" + self.queryString() + "&oauth_signature=" + self.signature();
+                return url + '?' + this.queryString() + '&oauth_signature=' + this.signature();
             },
-            curl: function() {
-                var self;
-                self = this;
-
-                var url = self.url()
-                if (self.actualUrl()) {
-                  url = self.actualUrl()
+            urlEncoded: function (fields) {
+                return _.keys(fields).map(function(key) {
+                    return key + "=" + encodeURIComponent(fields[key]);
+                }).join("&");
+            },
+            urlAndFields: function (url) {
+                var encodedFields = this.urlEncoded(this.fields());
+                return encodedFields ? url + '?' + encodedFields : url;
+            },
+            curl: function () {
+                var url = parameters.url()
+                if (parameters.actualUrl()) {
+                    url = parameters.actualUrl()
                 }
 
                 var curlCommand = "";
-                if (self.method() === "GET") {
-                    curlCommand = "curl '" + url + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
-                } else if (self.method() === "POST" || self.method() === "PUT") {
-                    if (self.body()) {
-                        curlCommand = "curl -X " + self.method() + " '" + oauthSignerOld.urlAndFields(url) + "' -d '" + self.body() + "' -H 'Authorization: " + self.authorizationHeader() + "' -H 'Content-Type: " + self.bodyEncoding() + "'";
+                if (parameters.method() === "GET") {
+                    curlCommand = "curl '" + url + "?" + this.queryString() + "&oauth_signature=" + this.signature() + "'";
+                } else if (parameters.method() === "POST" || parameters.method() === "PUT") {
+                    if (parameters.body()) {
+                        curlCommand = "curl -X " + parameters.method() + " '" + this.urlAndFields(url) + "' -d '" + parameters.body() + "' -H 'Authorization: " + this.authorizationHeader() + "' -H 'Content-Type: " + parameters.bodyEncoding() + "'";
                     } else {
-                        curlCommand = "curl -X " + self.method() + " '" + url + "' -d '" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
+                        curlCommand = "curl -X " + parameters.method() + " '" + url + "' -d '" + this.queryString() + "&oauth_signature=" + this.signature() + "'";
                     }
                 } else {
-                    curlCommand = "curl -X " + self.method() + " '" + url + "?" + self.queryString() + "&oauth_signature=" + self.signature() + "'";
+                    curlCommand = "curl -X " + parameters.method() + " '" + url + "?" + this.queryString() + "&oauth_signature=" + this.signature() + "'";
                 }
                 if (parameters.curlParameters.output()) {
                     curlCommand += ' -o ' + parameters.curlParameters.output();
@@ -140,19 +129,18 @@
                     curlCommand += ' -v';
                 }
 
-                if (parameters.headersArray().length > 0) {
-                    parameters.headersArray().forEach(function(header) {
-                        if (header.name()) {
-                            curlCommand += ' -H "' + header.name();
-                            if (header.value()) {
-                              curlCommand += ':' + header.value();
-                            }
-                            curlCommand += '"';
+                parameters.headers().forEach(function (header) {
+                    if (header.name()) {
+                        curlCommand += ' -H "' + header.name();
+                        if (header.value()) {
+                            curlCommand += ':' + header.value();
                         }
-                    })
-                }
+                        curlCommand += '"';
+                    }
+                });
+
                 return curlCommand;
             }
-        }, parameters);
+        };
     };
-})).call(this);
+}).call(this);
