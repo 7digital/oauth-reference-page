@@ -76,19 +76,47 @@
             authorizationHeader: ko.computed(function () {
                 return self.oauthSignature().authorizationHeader();
             }),
-            signedUrl: ko.computed(function () {
-                return self.oauthSignature().signedUrl();
-            }),
             prettySignedUrl: ko.computed(function () {
-                var url = self.parameters.url()
-                if (self.parameters.actualUrl()) {
-                  url = self.parameters.actualUrl()
-                }
+                var url = self.parameters.actualUrl() || self.parameters.url();
                 return self.parameters.method() + ' ' + url.substring(0, 60) + '?...';
             }),
             curl: ko.computed(function () {
                 return self.oauthSignature().curl();
             })
+        };
+
+        self.requestSignedUrl = function () {
+            var method = self.parameters.method();
+
+            if (method == 'GET') {
+                return window.open(self.oauthSignature().signedUrl());
+            }
+
+            if (method === 'POST' || method === 'PUT') {
+                var body = self.parameters.body();
+
+                if (body) {
+                    var sig = self.oauthSignature();
+
+                    nanoajax.ajax({
+                        url: sig.urlAndFields(self.parameters.url()),
+                        method: method,
+                        body: body,
+                        cors: true,
+                        headers: {
+                            'Authorization': sig.authorizationHeader(),
+                            'Content-Type': self.parameters.bodyEncoding()
+                        }
+                    }, function (code, res) {
+                        console.log(code, res);
+                    });
+
+                } else {
+                    // .......
+                }
+            }
+
+            //ELSE...
         };
     };
     window.oauthPage = new oauthParameters();

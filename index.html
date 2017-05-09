@@ -109,10 +109,9 @@
             <input id="actual-url" class="large" data-bind="value: parameters.actualUrl, valueUpdate: 'keyup'" />
           </li>
           <li>
-            <a target="signed_request" data-bind="
-                attr: {href: signature.signedUrl},
-                text: signature.prettySignedUrl,
-                visible: parameters.method() === 'GET'
+            <a href="#" target="signed_request" data-bind="
+              click: requestSignedUrl,
+              text: signature.prettySignedUrl
             "></a>
           </li>
           <li class="curl-options">
@@ -152,6 +151,7 @@
     <script src="lib/knockout.js"></script>
     <script src="lib/url.min.js" type="text/javascript"></script>
     <script src="lib/oauth-signature.js" type="text/javascript"></script>
+    <script src="lib/nanoajax.min.js" type="text/javascript"></script>
     <script src="oauth.js" type="text/javascript"></script>
     <script src="ui.js" type="text/javascript"></script>
   </body>
