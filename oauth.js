@@ -34,6 +34,10 @@
                 .replace(/[!'()]/g, escape)
                 .replace(/\*/g, '%2A');
             },
+            formEncode: function(s) {
+                return this.rfc3986Encode(s)
+                .replace(/%20/g, '+');
+            },
             queryString: function () {
                 var self = this;
                 var fields = this.fields();
@@ -41,6 +45,14 @@
                 return fieldNames.map(function (name) {
                     return name + '=' + self.rfc3986Encode(fields[name]);
                 }).join('&');
+            },
+            formEncodedQueryString: function() {
+                var self = this;
+                var fields = this.fields();
+                var fieldNames = _.keys(fields).sort();
+                return fieldNames.map(function (name) {
+                    return name + '=' + self.formEncode(fields[name]);
+                }).join('&'); 
             },
             headerEncoded: function (fields) {
                 return _.keys(fields).map(function (key) {
@@ -121,7 +133,7 @@
                     if (parameters.body()) {
                         curlCommand = "curl -X " + parameters.method() + " '" + this.urlAndFields(url) + "' -d '" + parameters.body() + "' -H 'Authorization: " + this.authorizationHeader() + "' -H 'Content-Type: " + parameters.bodyEncoding() + "'";
                     } else {
-                        curlCommand = "curl -X " + parameters.method() + " '" + url + "' -d '" + this.queryString() + "&oauth_signature=" + this.signature() + "'";
+                        curlCommand = "curl -X " + parameters.method() + " '" + url + "' -d '" + this.formEncodedQueryString() + "&oauth_signature=" + this.signature() + "'";
                     }
                 } else {
                     curlCommand = "curl -X " + parameters.method() + " '" + url + "?" + this.queryString() + "&oauth_signature=" + this.signature() + "'";
